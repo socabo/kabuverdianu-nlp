@@ -1,0 +1,23 @@
+[project]
+name = "kabuverdianu-nlp"
+version = "0.1.0"
+description = "Corpus-collection pipeline for Cape Verdean Creole (Kabuverdianu, kea)"
+requires-python = ">=3.10"
+dependencies = []  # stdlib only — runs anywhere
+
+[project.optional-dependencies]
+# Better mojibake repair during cleaning
+text = ["ftfy>=6.0"]
+# For later stages (not needed to collect/clean text)
+ml = ["datasets>=2.18", "sentencepiece", "transformers>=4.40"]
+test = ["pytest>=8.0"]
+
+[project.scripts]
+kabuverdianu-nlp = "kabuverdianu_corpus.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
