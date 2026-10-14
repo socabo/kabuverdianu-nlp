@@ -12,6 +12,7 @@ from .align import process_pending
 from .clean import clean_pending
 from .export import export
 from .ingest import ingest_pairs, ingest_text
+from .retag import retag_source
 
 
 def _count(path: Path) -> int:
@@ -42,6 +43,11 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--delimiter", default="\t")
     s.add_argument("--license", default="unknown")
 
+    s = sub.add_parser("retag", help="set variant/orth on all records from one source")
+    s.add_argument("--source", required=True, help="exact source label to retag")
+    s.add_argument("--variant", help="santiago | saovicente | other | unknown")
+    s.add_argument("--orth", help="alupec | pt-based | mixed | unknown")
+
     sub.add_parser("clean", help="process pending monolingual + parallel data")
     sub.add_parser("export", help="write train/dev/test JSONL splits")
     sub.add_parser("stats", help="show corpus sizes")
@@ -58,6 +64,15 @@ def main(argv: list[str] | None = None) -> int:
                          tgt_lang=a.tgt_lang, delimiter=a.delimiter,
                          license_=a.license, root=root)
         print(f"ingested {n} pairs from {a.file}")
+    elif a.cmd == "retag":
+        counts = retag_source(a.source, variant=a.variant, orth=a.orth, root=root)
+        total = sum(counts.values())
+        for rel, n in counts.items():
+            print(f"{rel}: retagged {n}")
+        if total:
+            print("run `export` to refresh the split files")
+        else:
+            print(f"no records found with source {a.source!r}")
     elif a.cmd == "clean":
         k1, d1 = clean_pending(root)
         k2, d2 = process_pending(root)

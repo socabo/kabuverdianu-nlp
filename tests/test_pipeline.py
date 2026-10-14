@@ -59,3 +59,22 @@ def test_pipeline_end_to_end(tmp_path):
     counts = json.loads(run(["export"], cwd=tmp_path).stdout)
     assert sum(v for k, v in counts.items() if k.startswith("parallel.")) == 2
     assert sum(v for k, v in counts.items() if k.startswith("mono.")) == len(sents)
+
+
+def test_retag_source(tmp_path):
+    (tmp_path / "data").mkdir()
+    mono = tmp_path / "mono.txt"
+    mono.write_text("Nu debe sabe ma nos ki ten ki konpo-l\n", encoding="utf-8")
+    run(["ingest", str(mono), "--source", "lyrics/x"], cwd=tmp_path)
+    run(["clean"], cwd=tmp_path)
+
+    out = run(["retag", "--source", "lyrics/x", "--variant", "santiago",
+               "--orth", "alupec"], cwd=tmp_path).stdout
+    assert "retagged 1" in out
+
+    rec = json.loads((tmp_path / "data/clean/sentences.jsonl").read_text())
+    assert rec["variant"] == "santiago" and rec["orth"] == "alupec"
+
+    out = run(["retag", "--source", "lyrics/none", "--variant", "other"],
+              cwd=tmp_path).stdout
+    assert "no records found" in out
