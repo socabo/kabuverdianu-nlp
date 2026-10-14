@@ -48,6 +48,13 @@ The Fongbé team spent years on collection and annotation before any model. For 
 - The **Cape Verdean diaspora** (Boston/Brockton, Lisbon, Rotterdam, Paris, Dakar) is a real asset for crowdsourcing annotation, translation pairs, and voice data.
 - Institutional allies: Universidade de Cabo Verde (Uni-CV), the IILP (Instituto Internacional da Língua Portuguesa, headquartered in Praia), and Cape Verde's ongoing efforts around officializing Kriolu.
 
+### Masakhane integration path
+
+1. **Intro post** in the Masakhane community channels (Slack/mailing list, join via masakhane.io): what the project is, what exists, where Kriolu speakers and researchers can help.
+2. **Study existing benchmarks** in [masakhane-io/masakhane-mt](https://github.com/masakhane-io/masakhane-mt): how languages with similar problems (small corpora, orthography variation) prepared data, and the documentation conventions for dataset provenance and splits — mirror those conventions in our exports so a benchmark submission is trivial later.
+3. **Contribute a `kea` benchmark PR** to masakhane-mt once a v1 corpus + fine-tuned model exists (Kabuverdianu appears to have no benchmark there yet): data-prep notebook, model results (chrF/BLEU on FLORES-200 `kea_Latn`), provenance documentation. This registers Kabuverdianu in the community's own language registry — the single highest-visibility step for attracting collaborators.
+4. Note on tooling: masakhane-mt's starter notebooks are JoeyNMT-based (training from scratch); our NLLB fine-tuning approach supersedes that for a corpus this small, so we take their *process and conventions*, not their training stack.
+
 ## 4. Suggested sequence
 
 1. Define scope: which variant(s), which orthography, translation first or speech first.
@@ -55,6 +62,7 @@ The Fongbé team spent years on collection and annotation before any model. For 
 3. Build the corpus pipeline: scraping + cleaning + orthography normalization + parallel alignment.
 4. Fine-tune NLLB-200 distilled; evaluate on FLORES-200 `kea_Latn` (gives a comparable BLEU/chrF score).
 5. Release dataset + model openly; iterate with community feedback.
+   Then submit the `kea` benchmark to masakhane-mt (see "Masakhane integration path" above).
 6. Speech track: Common Voice campaign → Whisper fine-tune.
 7. Longer term: push improved data to Google (they accept community contributions for low-resource languages) and seek institutional backing — the Benin lesson is that a government program ("J'aime ma langue") can take a grassroots effort to national scale.
 
